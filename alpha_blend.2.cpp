@@ -5,16 +5,17 @@
 constexpr size_t WIDTH  = 800;
 constexpr size_t HEIGHT = 600;
 
-constexpr size_t Mm128_size = 128;
-constexpr size_t Move_sum_dst   = 14;
-constexpr size_t Max_char   = 255;
+constexpr size_t Mm128_size   = 128;
+constexpr size_t Move_sum_dst = 14;
+constexpr size_t Max_char     = 255;
 
 typedef unsigned char limpidity;
 typedef unsigned char ONE_BYTE;
 typedef RGBQUAD (&vid_memory) [HEIGHT][WIDTH];
 
 constexpr char* background = "C:\\Users\\dunka\\CLionProjects\\alpha_blending\\cmake-build-debug\\ded.bmp";
-constexpr char* target     = "C:\\Users\\dunka\\CLionProjects\\alpha_blending\\cmake-build-debug\\racket.bmp";
+constexpr char* target     = "C:\\Users\\dunka\\CLionProjects\\alpha_blending\\cmake-build-debug\\kot.bmp";
+constexpr char* result     = "C:\\Users\\dunka\\CLionProjects\\alpha_blending\\cmake-build-debug\\result.bmp";
 
 class Mem
 {
@@ -52,7 +53,7 @@ int main ()
                 //Now target_4_3_pixels = {0, 0, 4 pixel, 3 pixel} of target
                 //    back_4_3_pixels   = {0, 0, 4 pixel, 3 pixel} of back
                 //Why compiler himself doesn't cast __m128i to __m128??????
-                const __m128i const_0       = _mm_set1_epi8 (0);
+                const __m128i const_0  = _mm_set1_epi8 (0);
 
                 auto target_4_3_pixels = (__m128i) _mm_movehl_ps ((__m128) const_0, (__m128) target_2_1_pixels);
                 auto back_4_3_pixels   = (__m128i) _mm_movehl_ps ((__m128) const_0, (__m128) back_2_1_pixels);
@@ -75,7 +76,7 @@ int main ()
                 target_4_3_pixels = _mm_mullo_epi16 (target_4_3_pixels, factor2);
 
                 //Multiply back pixel by (255 - limpidity)
-                const __m128i const_255     = _mm_cvtepu8_epi16 (_mm_set1_epi8 (Max_char));
+                const __m128i const_255 = _mm_cvtepu8_epi16 (_mm_set1_epi8 (Max_char));
 
                 back_2_1_pixels = _mm_mullo_epi16 (back_2_1_pixels, _mm_sub_epi16 (const_255, factor1));
                 back_4_3_pixels = _mm_mullo_epi16 (back_4_3_pixels, _mm_sub_epi16 (const_255, factor2));
@@ -87,7 +88,7 @@ int main ()
                 //Make right position of bytes, see https://software.intel.com/sites/landingpage/IntrinsicsGuide/#expand=426,85,3863,85,1606,4965,4965,5205,5152&text=_mm_shuffle_epi8
                 //for better understanding. Also that site explains all other commands not in humanitarian way.
                 //P.S. The digits below are used to move bytes on necessary places
-                const __m128i sum_mask  = _mm_set_epi8 (Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size,
+                const __m128i sum_mask = _mm_set_epi8 (Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size, Mm128_size,
                                                         15,         13,         11,         9,          7,          5,          3,          1         );
 
                 sum_2_1_pixels = _mm_shuffle_epi8 (sum_2_1_pixels, sum_mask);
@@ -100,6 +101,9 @@ int main ()
         }
         txSleep ();
     }
+
+    txEnd ();
+    txSaveImage (result, txDC ());
 }
 
 vid_memory Mem::NoTxLoadImage (const char* fileName)
@@ -112,7 +116,7 @@ vid_memory Mem::NoTxLoadImage (const char* fileName)
         txMessageBox ("Image was not downloaded");
 
     txBitBlt (lay, (txGetExtentX (lay) - txGetExtentX (img)) / 2,
-                   (txGetExtentY (lay) - txGetExtentY (img)) / 2, 0, 0, img);
+              (txGetExtentY (lay) - txGetExtentY (img)) / 2, 0, 0, img);
     txDeleteDC (img);
 
     return (vid_memory) *img_mem;
