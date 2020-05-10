@@ -8,8 +8,8 @@ typedef unsigned char limpidity;
 typedef unsigned char ONE_BYTE;
 typedef RGBQUAD (&vid_memory) [HEIGHT][WIDTH];
 
-constexpr const char* background = "C:\\Users\\dunka\\CLionProjects\\alpha_blending\\cmake-build-debug\\ded.bmp";
-constexpr const char* target     = "C:\\Users\\dunka\\CLionProjects\\alpha_blending\\cmake-build-debug\\racket.bmp";
+constexpr const char* background = "ded.bmp";
+constexpr const char* target     = "racket.bmp";
 
 class Mem
 {
